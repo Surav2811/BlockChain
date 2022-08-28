@@ -1,4 +1,5 @@
 import datetime
+from email import message
 import hashlib
 import json
 from flask import Flask, jsonify
@@ -52,3 +53,35 @@ class Blockchain:
             previous_block = block
             block_index += 1
         return True
+
+
+
+# Part2 Mining BlockChain
+# Creating webapp
+app = Flask(__name__)
+
+#Blockchain
+blockchain = Blockchain()
+
+#Mining a new Block
+@app.route ('/mine_block', method = ['GET'])
+def mine_block ():
+    previous_block = blockchain.get_previous_block()
+    previous_proof = previous_block['proof']
+    proof = blockchain.proof_of_work(previous_proof)
+    previous_hash = blockchain.hash(previous_block)
+    block = blockchain.create_block(proof, previous_hash)
+    response = {'message': "Congratulations you just mined a Block: ",
+                'index' : block ['index'],
+                'timestamp' : block ['timestamp'],
+                'proof' : block ['proof'],
+                'previous_hash' : block ['previous_hash']}
+    return jsonify(response), 200 
+
+
+# Get Full BlockChain
+@app.route ('/get_chain', method = ['GET'])
+def get_chain():
+    response = {'chain' : blockchain.chain,
+                'length': len (blockchain.chain)}
+    return jsonify (response), 200

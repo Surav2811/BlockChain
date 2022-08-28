@@ -1,5 +1,4 @@
 import datetime
-from email import message
 import hashlib
 import json
 from flask import Flask, jsonify
@@ -85,3 +84,15 @@ def get_chain():
     response = {'chain' : blockchain.chain,
                 'length': len (blockchain.chain)}
     return jsonify (response), 200
+
+@app.route ('/is_valid', method = ['GET'])
+def is_valid():
+    is_valid = blockchain.is_chain_valid(blockchain.chain)
+    if is_valid:
+        response = {'message':'Congratulations. The blockchain is valid.'}
+    else:
+        response = {'message':'The chain is NOT Valid!'}
+    return jsonify (response), 200
+
+# Running the BlockChain
+app.run(host = '0.0.0.0', port = 5000)
